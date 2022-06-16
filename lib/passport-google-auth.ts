@@ -11,8 +11,8 @@ const saveUser = (user: Profile) => {
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID as string ||'547315084191-k0oq33vtglbsvgtli8sbuqpjrrabrrch.apps.googleusercontent.com',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string || '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',
+      clientID: process.env.GOOGLE_CLIENT_ID as string ||'859272039663-lerngqju358grru2i7e58q83ji6ca3it.apps.googleusercontent.com',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string || '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',
       callbackURL: "http://localhost:3000", // callback url on our app to verify authentication.
     },
     async (_accessToken, _refreshToken, profile, cb: any) => {

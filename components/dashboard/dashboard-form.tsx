@@ -2,6 +2,7 @@ import { Formik, Field, Form, FormikHelpers } from 'formik';
 import React, { Component } from 'react';
 import styles from './dashboard-form.module.css'
 import toast from "../Toast";
+import { signIn, signOut, useSession } from 'next-auth/client';
 
 // interface Values {
 
@@ -74,7 +75,7 @@ import toast from "../Toast";
 export default class dashboard extends Component {
 
     constructor() {
-        super();
+         super();
         this.state={};
     }
     // componentWillMount() {
@@ -86,10 +87,11 @@ export default class dashboard extends Component {
 
     callInitSetUp = () => {
         var tokensMain = localStorage.getItem("tokens")||null;
-        if(tokensMain!=='' && tokensMain !== 'undefined'){
+        if(tokensMain!=='' && tokensMain !== 'undefined' && tokensMain){
             tokensMain = JSON.parse(tokensMain);
-            if(tokensMain && typeof tokensMain !== 'undefined' ){
-                const tokens = tokensMain.data.tokens.access.token;
+            if(tokensMain && typeof tokensMain !== 'undefined' && tokensMain.hasOwnProperty("data") && tokensMain!=null){
+                
+                const tokens = tokensMain.data.tokens.access.token ||null;
                 this.setState({...tokensMain.data.user});
                 if(tokens !==''){
                     let role = tokensMain.data.user.role;
@@ -218,8 +220,12 @@ export default class dashboard extends Component {
     }
     logout = () => {
         try {
-            localStorage.clear();
-            location.href = '/'
+             signOut();
+            setTimeout(()=>{
+                localStorage.clear();
+                location.href = '/'
+            },1000)
+
 
         } catch (err) {
             console.log(err);
@@ -236,7 +242,7 @@ export default class dashboard extends Component {
             <div className={styles.dashboard_box + ' p-3'}>
                 {
                     <div align="left" >Hello {firstName??'' } {lastName??''},</div>}
-                    <div align="right" > <a href="#" onClick={this.logout} >logout </a> </div>
+                    <div align="right" > <a href="#" onClick={this.logout } >logout </a> </div>
 
                 <h1 className="display-6 mb-3">{roleName} Dashboard</h1>
                 <Formik

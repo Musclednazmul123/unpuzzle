@@ -12,6 +12,7 @@ export default function Home() {
     const notify = React.useCallback((type, message) => {
         toast({ type, message });
     }, []);
+    let checked = true;
 
     const loadDataOnlyOnce = async(session) => {
         console.log("loadDataOnlyOnce");
@@ -41,18 +42,17 @@ export default function Home() {
                 .then(response => response.text())
                 .then(result => {
                     const resultJson = JSON.parse(result)
-                    localStorage.setItem("tokens", JSON.stringify(resultJson));
                     if (resultJson.hasOwnProperty("code")) {
                         if (resultJson.code == 400 && resultJson.message === 'Email already taken') {
 
 
-                            var urlencoded = new URLSearchParams();
+                            let urlencoded = new URLSearchParams();
                             urlencoded.append("loginType", "1");
                             urlencoded.append("email", session.user.email || '');
                             urlencoded.append("socialId", session.user.email || '');
                             urlencoded.append("idToken", session.user.email || '');
 
-                            var requestOptions = {
+                            let requestOptions = {
                                 method: 'POST',
                                 headers: myHeaders,
                                 body: urlencoded,
@@ -62,32 +62,63 @@ export default function Home() {
                             fetch("http://13.233.22.187:3000/v1/auth/login", requestOptions)
                                 .then(response => response.text())
                                 .then(result => {
-                                    const resultJson2 = JSON.parse(result)
-                                    notify("error", resultJson2.message)
-                                    console.log('result', result)
+                                    const resultJsonGlogin = JSON.parse(result)
+                                    if (resultJsonGlogin.hasOwnProperty("code")) {
+                                        notify("error", resultJsonGlogin.message)
+                                    } else {
+                                        notify("success", resultJsonGlogin.message)
+                                        localStorage.setItem("tokens", JSON.stringify(resultJsonGlogin));
+                                        setTimeout(() => {
+                                            location.href = '/dashboard'
+                                        }, 1000);
+                                    }
                                 })
                                 .catch(error => console.log('error', error));
                         }
 
                     } else {
-                        notify("success", "Register Successfully !")
-                        setTimeout(() => {
-                            location.href = '/dashboard'
-                        }, 100);
+                        if(resultJson.hasOwnProperty("code"))
+                        {
+                            notify("error", resultJson.message)
+                        }else{
+                            notify("success", "Register Successfully !")
+                            localStorage.setItem("tokens",JSON.stringify(resultJson));
+                            setTimeout(()=>{
+                                location.href = '/dashboard'
+                            },100);
+                        }
                     }
-
                 })
                 .catch(error => console.log('error', error));
-
-
         }
+    };
 
-        };
-
-    useEffect(() => {
+    useEffect(async () => {
         console.log('session',session)
-        loadDataOnlyOnce(session); // this will fire only on first render
+        let sessionVar = await session;
+            console.log('session',sessionVar)
+            console.log('checked',checked)
+            if(typeof sessionVar != 'undefined' && checked) {
+                checked = false;
+                loadDataOnlyOnce(sessionVar); // this will fire only on first render
+            }
     });
+
+/*    useEffect(async () => {
+        if (loading) {
+            const { data } = await loadDataOnlyOnce(session);
+            setSubsList(
+                data.map((sub) => ({
+                    id: sub.id,
+                    title: sub.snippet.title,
+                }))
+            );
+            console.log('data',data);
+            setLoading(false);
+        }
+        console.log('session',session);
+        console.log('loading',loading);
+    }, [loading]);*/
 
     return (
 
