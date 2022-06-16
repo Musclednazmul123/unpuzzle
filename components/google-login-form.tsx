@@ -104,22 +104,6 @@ export default function Home() {
             }
     });
 
-/*    useEffect(async () => {
-        if (loading) {
-            const { data } = await loadDataOnlyOnce(session);
-            setSubsList(
-                data.map((sub) => ({
-                    id: sub.id,
-                    title: sub.snippet.title,
-                }))
-            );
-            console.log('data',data);
-            setLoading(false);
-        }
-        console.log('session',session);
-        console.log('loading',loading);
-    }, [loading]);*/
-
     return (
 
         <div>
@@ -130,7 +114,7 @@ export default function Home() {
                 </>
             )}
 
-            {session && (
+            {session &&false&& (
                 <>
                 <button onClick={() => signOut()}>Sign Out</button>
                 {/*<p>

@@ -74,24 +74,26 @@ import { signIn, signOut, useSession } from 'next-auth/client';
 
 export default class dashboard extends Component {
 
-    constructor() {
-         super();
+   /* constructor() {
+         //super(props);
+
+    }*/
+    componentWillMount() {
+        // console.log('hi will')
         this.state={};
     }
-    // componentWillMount() {
-    //     console.log('hi will')
-    // }
     componentDidMount() {
+       // this.state={};
         this.callInitSetUp();
+
     }
 
     callInitSetUp = () => {
-        var tokensMain = localStorage.getItem("tokens")||null;
-        if(tokensMain!=='' && tokensMain !== 'undefined' && tokensMain){
+        let tokensMain = localStorage.getItem("tokens")||{};
+        if(tokensMain!=='' && tokensMain !== 'undefined' && typeof tokensMain === 'string'){
             tokensMain = JSON.parse(tokensMain);
             if(tokensMain && typeof tokensMain !== 'undefined' && tokensMain.hasOwnProperty("data") && tokensMain!=null){
-                
-                const tokens = tokensMain.data.tokens.access.token ||null;
+                const tokens = tokensMain.data.tokens.access.token ||''
                 this.setState({...tokensMain.data.user});
                 if(tokens !==''){
                     let role = tokensMain.data.user.role;
@@ -236,7 +238,7 @@ export default class dashboard extends Component {
         this.callInitSetUp();
     }
     render(){
-        const { firstName,lastName,role='',dataUserList =[] } = this.state;
+        const {firstName='',lastName='',role='',dataUserList =[] } = this.state;
         let roleName =role.charAt(0).toUpperCase() + role.slice(1);;
         return (
             <div className={styles.dashboard_box + ' p-3'}>
