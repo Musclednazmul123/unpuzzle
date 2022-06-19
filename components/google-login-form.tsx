@@ -14,7 +14,7 @@ export default function Home() {
     }, []);
     let checked = true;
 
-    const loadDataOnlyOnce = async(session) => {
+    const loadDataOnlyOnce = async(session:any) => {
         console.log("loadDataOnlyOnce");
         if(session && session.user) {
 
@@ -30,15 +30,12 @@ export default function Home() {
             urlencoded.append("socialId", session.user.email || '');
             urlencoded.append("idToken", session.user.email || '');
 
-
-            var requestOptions = {
+            await fetch("http://13.233.22.187:3000/v1/auth/register", {
                 method: 'POST',
                 headers: myHeaders,
                 body: urlencoded,
                 redirect: 'follow'
-            };
-
-            await fetch("http://13.233.22.187:3000/v1/auth/register", requestOptions)
+            })
                 .then(response => response.text())
                 .then(result => {
                     const resultJson = JSON.parse(result)
@@ -52,14 +49,13 @@ export default function Home() {
                             urlencoded.append("socialId", session.user.email || '');
                             urlencoded.append("idToken", session.user.email || '');
 
-                            let requestOptions = {
+
+                            fetch("http://13.233.22.187:3000/v1/auth/login", {
                                 method: 'POST',
                                 headers: myHeaders,
                                 body: urlencoded,
                                 redirect: 'follow'
-                            };
-
-                            fetch("http://13.233.22.187:3000/v1/auth/login", requestOptions)
+                            })
                                 .then(response => response.text())
                                 .then(result => {
                                     const resultJsonGlogin = JSON.parse(result)
@@ -67,7 +63,8 @@ export default function Home() {
                                         notify("error", resultJsonGlogin.message)
                                     } else {
                                         notify("success", resultJsonGlogin.message)
-                                        localStorage.setItem("tokens", JSON.stringify(resultJsonGlogin));
+                                        localStorage.setItem("tokens", JSON.stringify(resultJsonGlogin.data.tokens.access.token));
+                                        localStorage.setItem("tokens_user", JSON.stringify(resultJsonGlogin.data.user));
                                         setTimeout(() => {
                                             location.href = '/dashboard'
                                         }, 1000);
@@ -82,7 +79,8 @@ export default function Home() {
                             notify("error", resultJson.message)
                         }else{
                             notify("success", "Register Successfully !")
-                            localStorage.setItem("tokens",JSON.stringify(resultJson));
+                            localStorage.setItem("tokens",JSON.stringify(resultJson.data.tokens.access.token));
+                            localStorage.setItem("tokens_user", JSON.stringify(resultJson.data.user));
                             setTimeout(()=>{
                                 location.href = '/dashboard'
                             },100);
@@ -94,14 +92,15 @@ export default function Home() {
     };
 
     useEffect(async () => {
-        console.log('session',session)
+        // console.log('session',session)
         let sessionVar = await session;
-            console.log('session',sessionVar)
-            console.log('checked',checked)
+            // console.log('session',sessionVar)
+            // console.log('checked',checked)
             if(typeof sessionVar != 'undefined' && checked) {
                 checked = false;
                 loadDataOnlyOnce(sessionVar); // this will fire only on first render
             }
+
     });
 
     return (

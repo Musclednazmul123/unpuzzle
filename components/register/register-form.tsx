@@ -70,7 +70,8 @@ export default function LoginForm() {
                   .then(response => response.text())
                   .then(result =>{
                       const resultJson = JSON.parse(result)
-                      localStorage.setItem("tokens",JSON.stringify(resultJson));
+                      localStorage.setItem("tokens_user", JSON.stringify(resultJson.data.user));
+                      localStorage.setItem("tokens",JSON.stringify(resultJson.data.tokens.access.token));
                       if(resultJson.hasOwnProperty("code"))
                       {
                           notify("error", resultJson.message)

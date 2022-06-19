@@ -72,7 +72,8 @@ export default class Home extends Component {
                                     this.notify("error", resultJson.message)
                                 } else {
                                     this.notify("success", resultJson.message)
-                                    localStorage.setItem("tokens", JSON.stringify(resultJson));
+                                    localStorage.setItem("tokens", JSON.stringify(resultJson.data.tokens.access.token));
+                                    localStorage.setItem("tokens_user", JSON.stringify(resultJson.data.user));
                                     setTimeout(() => {
                                         location.href = '/dashboard'
                                     }, 1000);

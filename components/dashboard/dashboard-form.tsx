@@ -4,9 +4,20 @@ import styles from './dashboard-form.module.css'
 import toast from "../Toast";
 import { signIn, signOut, useSession } from 'next-auth/client';
 
-// interface Values {
-
-// }
+interface Values{
+    loginType: any;
+}
+interface UserToken {
+    email: any;
+    firstName: any;
+    id: number;
+    isEmailVerified: any;
+    lastName: any;
+    loginType: any;
+    password: any;
+    role: any;
+    socialId: any;
+}
 
 /*export default function DashbordForm() {
   
@@ -72,35 +83,36 @@ import { signIn, signOut, useSession } from 'next-auth/client';
   };*/
 
 
-export default class dashboard extends Component {
+export default class dashboard extends Component <UserToken,any,Values> {
 
    /* constructor() {
          //super(props);
 
     }*/
-    componentWillMount() {
+    // componentWillMount() {
         // console.log('hi will')
-        this.state={};
-    }
-    componentDidMount() {
        // this.state={};
+    // }
+    componentDidMount() {
+        this.state={};
         this.callInitSetUp();
 
     }
 
     callInitSetUp = () => {
-        let tokensMain = localStorage.getItem("tokens")||{};
+        let tokensMain = localStorage.getItem("tokens")||'';
         if(tokensMain!=='' && tokensMain !== 'undefined' && typeof tokensMain === 'string'){
-            tokensMain = JSON.parse(tokensMain);
-            if(tokensMain && typeof tokensMain !== 'undefined' && tokensMain.hasOwnProperty("data") && tokensMain!=null){
-                const tokens = tokensMain.data.tokens.access.token ||''
-                this.setState({...tokensMain.data.user});
+            if(tokensMain && typeof tokensMain !== 'undefined' && tokensMain!=null){
+                const tokens = tokensMain ||''
+                let UserToken = localStorage.getItem("tokens_user")||''
+                UserToken :UserToken = JSON.parse(UserToken);
+                this.setState(UserToken);
                 if(tokens !==''){
-                    let role = tokensMain.data.user.role;
+                    let role = JSON.parse(UserToken).role;
                     if(role === 'admin'){
                         this.callUserAPI(tokens);
                     }else{
-                        const dataUserList = [tokensMain.data.user]
+                        const dataUserList = [UserToken]
                         this.setState({dataUserList});
                     }
                 };
@@ -111,14 +123,14 @@ export default class dashboard extends Component {
             location.href = '/'
         }
     }
-    callUserAPI = async (tokens) => {
+    callUserAPI = async (tokens:any) => {
         try {
             const res = await fetch(`http://13.233.22.187:3000/v1/users/`,{
                 credentials: 'include',
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': "Bearer "+tokens,
+                    'Authorization': "Bearer "+tokens.replace(/"/g, ''),
                 },
             });
             if(res.status === 401){
@@ -133,17 +145,17 @@ export default class dashboard extends Component {
             console.log(err);
         }
     };
-    notify = ((type, message) => {
+    notify = ((type:any, message:any) => {
         toast({ type, message });
     });
 
     getAccessToken = () =>{
-        let tokensMain = localStorage.getItem("tokens")||null;
+        let tokensMain = localStorage.getItem("tokens")||'';
         let tokens = '';
         if(tokensMain!=='' && tokensMain !== 'undefined'){
             tokensMain = JSON.parse(tokensMain);
             if(tokensMain && typeof tokensMain !== 'undefined' ){
-                tokens = tokensMain.data.tokens.access.token;
+                tokens = tokensMain;
             }
         }
         return {tokens,tokensMain};
@@ -156,13 +168,11 @@ export default class dashboard extends Component {
             let myHeaders = new Headers();
             myHeaders.append("Authorization", "Bearer "+tokens);
 
-            let requestOptions = {
+            fetch("http://13.233.22.187:3000/v1/auth/send-verification-email", {
                 method: 'GET',
                 headers: myHeaders,
                 redirect: 'follow'
-            };
-
-            fetch("http://13.233.22.187:3000/v1/auth/send-verification-email", requestOptions)
+            })
                 .then(response => response.text())
                 .then(result =>{
                     const resultJson = JSON.parse(result)
@@ -172,12 +182,11 @@ export default class dashboard extends Component {
                     }else{
                         //this.notify("success", resultJson.message)
                         const VerifyEmailToken = resultJson.token.replace(/"/g, '');
-                        let requestOptionsV = {
+
+                        fetch("http://13.233.22.187:3000/v1/auth/verify-email?token="+VerifyEmailToken, {
                             method: 'GET',
                             redirect: 'follow'
-                        };
-
-                        fetch("http://13.233.22.187:3000/v1/auth/verify-email?token="+VerifyEmailToken, requestOptionsV)
+                        })
                             .then(response => response.text())
                             .then(result =>{
                                 const resultJsonV = JSON.parse(result)
@@ -200,23 +209,20 @@ export default class dashboard extends Component {
             console.log(err);
         }
     }
-    reloadProfile = (myHeaders,tokensMain) =>{
-        var requestOptionsP = {
+    reloadProfile = (myHeaders:any,tokensMain:any) =>{
+
+        fetch("http://13.233.22.187:3000/v1/users/profile", {
             method: 'GET',
             headers: myHeaders,
             redirect: 'follow'
-        };
-        fetch("http://13.233.22.187:3000/v1/users/profile", requestOptionsP)
+        })
             .then(response => response.text())
             .then(result => {
                 const resultJsonP = JSON.parse(result)
-
-                tokensMain.data.user = resultJsonP.data;
-
-                localStorage.setItem("tokens", JSON.stringify(tokensMain));
+                localStorage.setItem("tokens_user", JSON.stringify(resultJsonP.data));
                 setTimeout(() => {
                     location.href = '/dashboard'
-                }, 1000);
+                }, 2000);
             })
             .catch(error => console.log('error', error));
     }
@@ -239,16 +245,17 @@ export default class dashboard extends Component {
     }
     render(){
         const {firstName='',lastName='',role='',dataUserList =[] } = this.state;
-        let roleName =role.charAt(0).toUpperCase() + role.slice(1);;
+        let roleName =role.charAt(0).toUpperCase() + role.slice(1);
         return (
             <div className={styles.dashboard_box + ' p-3'}>
                 {
-                    <div align="left" >Hello {firstName??'' } {lastName??''},</div>}
-                    <div align="right" > <a href="#" onClick={this.logout } >logout </a> </div>
+                    <div  >Hello {firstName??'' } {lastName??''},</div>}
+                    <div  > <a href="#" onClick={this.logout } >logout </a> </div>
 
                 <h1 className="display-6 mb-3">{roleName} Dashboard</h1>
                 <Formik
                     initialValues={{
+                        loginType: ''
                         // data :callUserAPI(),
                         // profile:callProfileAPI()
                     }}
@@ -270,14 +277,12 @@ export default class dashboard extends Component {
                             let urlencoded = new URLSearchParams();
                             urlencoded.append("role", values.loginType);
 
-                            let requestOptions = {
+                            fetch("http://13.233.22.187:3000/v1/users/change-role", {
                                 method: 'POST',
                                 headers: myHeaders,
                                 body: urlencoded,
                                 redirect: 'follow'
-                            };
-
-                            fetch("http://13.233.22.187:3000/v1/users/change-role", requestOptions)
+                            })
                                 .then(response => response.text())
                                 .then(result => {
                                     const resultJsonRole = JSON.parse(result)
@@ -329,7 +334,7 @@ export default class dashboard extends Component {
                         </thead>
                         <tbody>
 
-                        {dataUserList.map(( listValue, index ) => {
+                        {dataUserList.map(( listValue:any, index:number ) => {
                              return (
                                 <tr>
                                     <td>{listValue.firstName}</td>
