@@ -37,14 +37,13 @@ export default function ForgotForm() {
 
               var urlencoded = new URLSearchParams();
               urlencoded.append("email", ''+values.email);
-              var requestOptions = {
+
+              fetch("http://13.233.22.187:3000/v1/auth/forgot-password", {
                   method: 'POST',
                   headers: myHeaders,
                   body: urlencoded,
                   redirect: 'follow'
-              };
-
-              fetch("http://13.233.22.187:3000/v1/auth/forgot-password", requestOptions)
+              })
                   .then(response => response.text())
                   .then(result =>{
                       const resultJson = JSON.parse(result)
