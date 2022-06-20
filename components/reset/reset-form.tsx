@@ -35,7 +35,7 @@ export default class ResetForm extends Component {
             },500);
         }
     }
-    notify = ((type, message) => {
+    notify = ((type:any, message:any) => {
         toast({ type, message });
     });
 
@@ -52,21 +52,20 @@ export default class ResetForm extends Component {
                     onSubmit={(values: Values,
                                {setSubmitting}: FormikHelpers<Values>,) => {
 
-                        const tokens = localStorage.getItem("tokens_forgot")||null;
+                        const tokens = localStorage.getItem("tokens_forgot")||'';
                         let myHeaders = new Headers();
                         myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
                         let urlencoded = new URLSearchParams();
                         urlencoded.append("password", ''+ values.password);
-                        let requestOptions = {
+
+                        let url ='http://13.233.22.187:3000/v1/auth/reset-password?token='+tokens.replace(/"/g, '');
+                        fetch(url, {
                             method: 'POST',
                             headers: myHeaders,
                             body: urlencoded,
                             redirect: 'follow'
-                        };
-
-                        let url ='http://13.233.22.187:3000/v1/auth/reset-password?token='+tokens.replace(/"/g, '');
-                        fetch(url, requestOptions)
+                        })
                             .then(response => response.text())
                             .then(result => {
                                 const resultJson = JSON.parse(result)

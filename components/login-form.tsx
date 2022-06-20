@@ -2,8 +2,8 @@ import { Formik, Field, Form, FormikHelpers } from 'formik';
 import styles from './login-form.module.css'
 import React, { Component } from 'react';
 import toast from "./Toast";
-import router from 'next/router'
 import GoogleLoginForm from './google-login-form'
+import Link from 'next/link'
 
 interface Values {
     username: string;
@@ -17,9 +17,8 @@ export default class Home extends Component {
         var tokens = localStorage.getItem("tokens")||null;
         if(tokens!==''){
             if(tokens && tokens !== 'undefined'){
-                tokens =  JSON.parse(tokens);
-                if(tokens && tokens.data && tokens.data.tokens){
-                    tokens = tokens.data.tokens.access.token||null;
+                if(tokens && tokens !==''){
+                    tokens = tokens||'';
                     if(tokens !==''){
                         location.href = 'dashboard'
                     }
@@ -27,7 +26,7 @@ export default class Home extends Component {
             }
         }
     }
-    notify = ((type, message) => {
+    notify = ((type:any, message:any) => {
         toast({ type, message });
     });
     render() {
@@ -57,14 +56,12 @@ export default class Home extends Component {
                         urlencoded.append("email", ""+values.username);
                         urlencoded.append("password", ""+values.password);
 
-                        var requestOptions = {
+                        fetch("http://13.233.22.187:3000/v1/auth/login", {
                             method: 'POST',
                             headers: myHeaders,
                             body: urlencoded,
                             redirect: 'follow'
-                        };
-
-                        fetch("http://13.233.22.187:3000/v1/auth/login", requestOptions)
+                        })
                             .then(response => response.text())
                             .then(result => {
                                 const resultJson = JSON.parse(result)
@@ -72,7 +69,8 @@ export default class Home extends Component {
                                     this.notify("error", resultJson.message)
                                 } else {
                                     this.notify("success", resultJson.message)
-                                    localStorage.setItem("tokens", JSON.stringify(resultJson));
+                                    localStorage.setItem("tokens", JSON.stringify(resultJson.data.tokens.access.token));
+                                    localStorage.setItem("tokens_user", JSON.stringify(resultJson.data.user));
                                     setTimeout(() => {
                                         location.href = '/dashboard'
                                     }, 1000);
@@ -94,8 +92,12 @@ export default class Home extends Component {
                         </div>
 
                         <button type="submit" className="btn btn-primary">Login</button> &nbsp;
-                        <a href="/signup">Sign Up</a>
-                        <a href="/forgot" className={styles.ml_1}>Forgot Password</a>
+                        <Link href="/signup">
+                            <a>Sign Up</a>
+                        </Link>
+                        <Link href="/forgot" >
+                            <a className={styles.ml_1} >Forgot Password</a>
+                        </Link>
                     </Form>
                 </Formik>
                 <div

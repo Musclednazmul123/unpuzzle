@@ -3,6 +3,7 @@ import * as React from "react";
  import toast from "../Toast";
 import styles from './register-form.module.css'
 import {json} from "stream/consumers";
+import Link from 'next/link'
 
 interface Values {
   loginType: string;
@@ -59,18 +60,17 @@ export default function LoginForm() {
               urlencoded.append("email", values.email);
               urlencoded.append("password", ""+values.password);
 
-              var requestOptions = {
+              fetch("http://13.233.22.187:3000/v1/auth/register", {
                   method: 'POST',
                   headers: myHeaders,
                   body: urlencoded,
                   redirect: 'follow'
-              };
-
-              fetch("http://13.233.22.187:3000/v1/auth/register", requestOptions)
+              })
                   .then(response => response.text())
                   .then(result =>{
                       const resultJson = JSON.parse(result)
-                      localStorage.setItem("tokens",JSON.stringify(resultJson));
+                      localStorage.setItem("tokens_user", JSON.stringify(resultJson.data.user));
+                      localStorage.setItem("tokens",JSON.stringify(resultJson.data.tokens.access.token));
                       if(resultJson.hasOwnProperty("code"))
                       {
                           notify("error", resultJson.message)
@@ -108,7 +108,9 @@ export default function LoginForm() {
 
             <button type="submit" className="btn btn-primary">Sign Up</button>
               <button type="reset"  className={'btn btn-default '+styles.button_default}>Reset</button>
-              <a href="/" className={styles.ml_1}>Back</a>
+              <Link href="/" >
+                  <a className={styles.ml_1} >Back</a>
+              </Link>
           </Form>
         </Formik>
       </div>
