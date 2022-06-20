@@ -3,6 +3,7 @@ import * as React from "react";
  import toast from "../Toast";
 import styles from './register-form.module.css'
 import {json} from "stream/consumers";
+import Link from 'next/link'
 
 interface Values {
   loginType: string;
@@ -107,7 +108,9 @@ export default function LoginForm() {
 
             <button type="submit" className="btn btn-primary">Sign Up</button>
               <button type="reset"  className={'btn btn-default '+styles.button_default}>Reset</button>
-              <a href="/" className={styles.ml_1}>Back</a>
+              <Link href="/" >
+                  <a className={styles.ml_1} >Back</a>
+              </Link>
           </Form>
         </Formik>
       </div>

@@ -12,7 +12,7 @@ const dashboard: NextPage = () => {
       </Head>
     
       <main className="vh-100 d-flex justify-content-center align-items-center">
-          <Dashboard/>
+          {/*<Dashboard/>*/}
       </main>
     </div>
   )

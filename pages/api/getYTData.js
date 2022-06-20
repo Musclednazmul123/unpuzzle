@@ -24,7 +24,7 @@ const getYTData = async (pageToken = '') => { return accessToken;
   return data.items;
 };
 
-export default async (req, res) => {
+/*export default async (req, res) => {
   const session = await getSession({ req });
 
   if (!session) {
@@ -38,4 +38,4 @@ export default async (req, res) => {
   const data = await getYTData();
 
   res.status(200).json(data);
-};
+};*/

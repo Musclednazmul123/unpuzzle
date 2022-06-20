@@ -3,6 +3,7 @@ import styles from './login-form.module.css'
 import React, { Component } from 'react';
 import toast from "./Toast";
 import GoogleLoginForm from './google-login-form'
+import Link from 'next/link'
 
 interface Values {
     username: string;
@@ -91,8 +92,12 @@ export default class Home extends Component {
                         </div>
 
                         <button type="submit" className="btn btn-primary">Login</button> &nbsp;
-                        <a href="/signup">Sign Up</a>
-                        <a href="/forgot" className={styles.ml_1}>Forgot Password</a>
+                        <Link href="/signup">
+                            <a>Sign Up</a>
+                        </Link>
+                        <Link href="/forgot" >
+                            <a className={styles.ml_1} >Forgot Password</a>
+                        </Link>
                     </Form>
                 </Formik>
                 <div

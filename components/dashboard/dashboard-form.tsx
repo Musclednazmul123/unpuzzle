@@ -4,6 +4,7 @@ import styles from './dashboard-form.module.css'
 import toast from "../Toast";
 import { signIn, signOut, useSession } from 'next-auth/client';
 
+
 interface Values{
     loginType: any;
 }
@@ -252,7 +253,7 @@ export default class dashboard extends Component <UserToken,any,Values> {
         this.callInitSetUp();
     }
     render(){
-        const {firstName='',lastName='',role='',dataUserList =[] } = this.state;
+        const {firstName='',lastName='',role='',dataUserList = [] } = this.state;
         let roleName =role.charAt(0).toUpperCase() + role.slice(1);
         return (
             <div className={styles.dashboard_box + ' p-3'}>
@@ -341,33 +342,31 @@ export default class dashboard extends Component <UserToken,any,Values> {
                         </tr>
                         </thead>
                         <tbody>
+                        { dataUserList.map(( listValue:any, index:number ) => {
+                                 return (
+                                    <tr key ={listValue.id} >
+                                        <td>{listValue.firstName}</td>
+                                        <td>{listValue.lastName}</td>
+                                        <td>{listValue.username}</td>
+                                        <td>{listValue.email}</td>
+                                        <td>
+                                            {listValue.isEmailVerified?'Yes':'No'}
 
-                        {dataUserList.map(( listValue:any, index:number ) => {
-                             return (
-                                <tr>
-                                    <td>{listValue.firstName}</td>
-                                    <td>{listValue.lastName}</td>
-                                    <td>{listValue.username}</td>
-                                    <td>{listValue.email}</td>
-                                    <td>
-                                        {listValue.isEmailVerified?'Yes':'No'}
+                                            {
+                                                ( roleName != 'Admin' && !listValue.isEmailVerified ) ?
+                                                (<span className={styles.ml_1}>
+                                                    <button type="button" onClick={this.emailVerified}
+                                                            title={'click to verify'}>Verify</button>
+                                                    </span>)
+                                                : ''
+                                            }
 
-                                        {
-                                            ( roleName != 'Admin' && !listValue.isEmailVerified ) ?
-                                            (<span className={styles.ml_1}>
-                                                <button type="button" onClick={this.emailVerified}
-                                                        title={'click to verify'}>Verify</button>
-                                                </span>)
-                                            : ''
-                                        }
-
-                                    </td>
-                                    <td>{listValue.role}</td>
-                                    {/*<td style={ roleName==='Admin' ? { display:'block'} : {display : 'none'} }  >{listValue.id}</td>*/}
-                                </tr>
-                            );
-                        })}
-
+                                        </td>
+                                        <td>{listValue.role}</td>
+                                    </tr>
+                                );
+                            })
+                        }
                         </tbody>
                     </table>
                 </div>
