@@ -84,7 +84,7 @@ interface UserToken {
   };*/
 
 
-export default class dashboard extends Component <UserToken,any,Values> {
+export default class dashboard extends Component  {
     email: any='';
     firstName: any='';
     isEmailVerified: any='';

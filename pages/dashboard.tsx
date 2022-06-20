@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Dashboard from '../components/dashboard/dashboard-form'
+import React, { forwardRef,CSSProperties } from 'react';
 
 const dashboard: NextPage = () => {
   return (
@@ -12,7 +13,7 @@ const dashboard: NextPage = () => {
       </Head>
     
       <main className="vh-100 d-flex justify-content-center align-items-center">
-          {/*<Dashboard/>*/}
+          <Dashboard/>
       </main>
     </div>
   )
