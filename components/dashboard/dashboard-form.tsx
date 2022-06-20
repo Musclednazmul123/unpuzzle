@@ -89,12 +89,11 @@ export default class dashboard extends Component <UserToken,any,Values> {
          //super(props);
 
     }*/
-    // componentWillMount() {
+     componentWillMount() {
         // console.log('hi will')
-       // this.state={};
-    // }
-    componentDidMount() {
         this.state={};
+     }
+    componentDidMount() {
         this.callInitSetUp();
 
     }
@@ -104,11 +103,12 @@ export default class dashboard extends Component <UserToken,any,Values> {
         if(tokensMain!=='' && tokensMain !== 'undefined' && typeof tokensMain === 'string'){
             if(tokensMain && typeof tokensMain !== 'undefined' && tokensMain!=null){
                 const tokens = tokensMain ||''
-                let UserToken = localStorage.getItem("tokens_user")||''
+                let UserTokenString = localStorage.getItem("tokens_user")||''
+                let UserToken = UserTokenString
                 UserToken :UserToken = JSON.parse(UserToken);
                 this.setState(UserToken);
-                if(tokens !==''){
-                    let role = JSON.parse(UserToken).role;
+                if(tokens !=='' && UserToken!=''){
+                    let role = JSON.parse(UserTokenString).role;//UserToken.role||{};
                     if(role === 'admin'){
                         this.callUserAPI(tokens);
                     }else{
@@ -249,8 +249,8 @@ export default class dashboard extends Component <UserToken,any,Values> {
         return (
             <div className={styles.dashboard_box + ' p-3'}>
                 {
-                    <div  >Hello {firstName??'' } {lastName??''},</div>}
-                    <div  > <a href="#" onClick={this.logout } >logout </a> </div>
+                    <div className={styles.pull_left} >Hello {firstName??'' } {lastName??''},</div>}
+                    <div className={styles.pull_right} > <a href="#" onClick={this.logout } >logout </a> </div>
 
                 <h1 className="display-6 mb-3">{roleName} Dashboard</h1>
                 <Formik

@@ -2,7 +2,6 @@ import { Formik, Field, Form, FormikHelpers } from 'formik';
 import styles from './login-form.module.css'
 import React, { Component } from 'react';
 import toast from "./Toast";
-import router from 'next/router'
 import GoogleLoginForm from './google-login-form'
 
 interface Values {
@@ -17,9 +16,8 @@ export default class Home extends Component {
         var tokens = localStorage.getItem("tokens")||null;
         if(tokens!==''){
             if(tokens && tokens !== 'undefined'){
-                tokens =  JSON.parse(tokens);
-                if(tokens && tokens.data && tokens.data.tokens){
-                    tokens = tokens.data.tokens.access.token||null;
+                if(tokens && tokens !==''){
+                    tokens = tokens||'';
                     if(tokens !==''){
                         location.href = 'dashboard'
                     }
@@ -27,7 +25,7 @@ export default class Home extends Component {
             }
         }
     }
-    notify = ((type, message) => {
+    notify = ((type:any, message:any) => {
         toast({ type, message });
     });
     render() {
@@ -57,14 +55,12 @@ export default class Home extends Component {
                         urlencoded.append("email", ""+values.username);
                         urlencoded.append("password", ""+values.password);
 
-                        var requestOptions = {
+                        fetch("http://13.233.22.187:3000/v1/auth/login", {
                             method: 'POST',
                             headers: myHeaders,
                             body: urlencoded,
                             redirect: 'follow'
-                        };
-
-                        fetch("http://13.233.22.187:3000/v1/auth/login", requestOptions)
+                        })
                             .then(response => response.text())
                             .then(result => {
                                 const resultJson = JSON.parse(result)

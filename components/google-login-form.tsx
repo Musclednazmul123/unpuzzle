@@ -91,17 +91,20 @@ export default function Home() {
         }
     };
 
-    useEffect(async () => {
-        // console.log('session',session)
-        let sessionVar = await session;
+    useEffect(() => {
+        const genRandom = async () => {
+            let sessionVar = await session;
             // console.log('session',sessionVar)
             // console.log('checked',checked)
             if(typeof sessionVar != 'undefined' && checked) {
                 checked = false;
                 loadDataOnlyOnce(sessionVar); // this will fire only on first render
             }
+        };
+        genRandom();
+    }, []);
 
-    });
+
 
     return (
 

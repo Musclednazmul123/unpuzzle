@@ -59,14 +59,12 @@ export default function LoginForm() {
               urlencoded.append("email", values.email);
               urlencoded.append("password", ""+values.password);
 
-              var requestOptions = {
+              fetch("http://13.233.22.187:3000/v1/auth/register", {
                   method: 'POST',
                   headers: myHeaders,
                   body: urlencoded,
                   redirect: 'follow'
-              };
-
-              fetch("http://13.233.22.187:3000/v1/auth/register", requestOptions)
+              })
                   .then(response => response.text())
                   .then(result =>{
                       const resultJson = JSON.parse(result)
