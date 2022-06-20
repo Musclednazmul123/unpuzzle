@@ -96,15 +96,12 @@ export default function Home() {
             let sessionVar = await session;
             // console.log('session',sessionVar)
             // console.log('checked',checked)
-            if(typeof sessionVar != 'undefined' && checked) {
-                checked = false;
+            if(typeof sessionVar != 'undefined') {
                 loadDataOnlyOnce(sessionVar); // this will fire only on first render
             }
         };
         genRandom();
-    }, []);
-
-
+    });
 
     return (
 

@@ -84,15 +84,23 @@ interface UserToken {
 
 
 export default class dashboard extends Component <UserToken,any,Values> {
-
+    email: any='';
+    firstName: any='';
+    isEmailVerified: any='';
+    lastName: any='';
+    loginType: any='';
+    password: any=[];
+    role: any=[];
+    socialId: any='';
+    state: any={};
    /* constructor() {
          //super(props);
 
     }*/
-     componentWillMount() {
+    /* componentWillMount() {
         // console.log('hi will')
-        this.state={};
-     }
+         this.state={};
+     }*/
     componentDidMount() {
         this.callInitSetUp();
 
